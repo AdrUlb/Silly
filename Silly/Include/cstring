@@ -1,0 +1,24 @@
+// This file acts as a kind of "polyfill" for freestanding implementations where cstring is not available
+#pragma once
+#include <cstddef>
+
+#if !defined(__STDC_HOSTED__) || __STDC_HOSTED__
+#include_next "cstring"
+#else
+extern "C"
+{
+size_t strlen(const char* str) noexcept;
+int strcmp(const char* str1, const char* str2) noexcept;
+
+void* memcpy(void* dest, const void* src, size_t count) noexcept;
+void* memmove(void* dest, const void* src, size_t count) noexcept;
+void* memset(void* str, int c, size_t count) noexcept;
+int memcmp(const void* str1, const void* str2, size_t count) noexcept;
+
+extern "C++" const void* memchr(const void* str, int c, size_t count) noexcept asm("memchr");
+extern "C++" void* memchr(void* str, int c, size_t count) noexcept asm("memchr");
+
+extern "C++" const void* memrchr(const void* str, int c, size_t count) noexcept asm("memrchr");;
+extern "C++" void* memrchr(void* str, int c, size_t count) noexcept asm("memrchr");
+}
+#endif
