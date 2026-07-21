@@ -33,6 +33,26 @@ namespace Silly
 			return *this;
 		}
 
+		[[nodiscard]] constexpr bool StartsWith(const StringView start) const noexcept
+		{
+			return GetLength() >= start.GetLength() && Slice(0, start.GetLength()) == start;
+		}
+
+		[[nodiscard]] constexpr bool StartsWith(const char start) const noexcept
+		{
+			return GetLength() > 0 && _ptr[0] == start;
+		}
+
+		[[nodiscard]] constexpr bool EndsWith(const StringView end) const noexcept
+		{
+			return GetLength() >= end.GetLength() && Slice(GetLength() - end.GetLength()) == end;
+		}
+
+		[[nodiscard]] constexpr bool EndsWith(const char end) const noexcept
+		{
+			return GetLength() > 0 && _ptr[GetLength() - 1] == end;
+		}
+
 		template<Hashing::HashAlgorithm HashAlgo>
 		constexpr friend void ProcessHash(HashAlgo& algorithm, const StringView& view) noexcept
 		{
@@ -62,7 +82,5 @@ namespace Silly
 
 			return Err();
 		}
-
-		[[nodiscard]] static Result<void, Error> AppendToStringImpl(String& str, const StringView& view);
 	};
 } // namespace Silly

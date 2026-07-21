@@ -78,12 +78,12 @@ namespace Silly
 			return Ok(Box { allocator, ptr });
 		}
 
-		[[nodiscard]] friend Result<void, Error> AppendToString(String& str, const Box& value, const StringView format = { }) noexcept
+		[[nodiscard]] friend Result<void, Error> AppendToString(String& output, const Box& value, const StringView format = { }) noexcept
 		{
 			if (!value._ptr)
-				return Formatter::FormatValue(str, "null", format);
+				return Formatter::FormatValue(output, "null", format);
 
-			return Formatter::FormatValue(str, *value._ptr, format);
+			return Formatter::FormatValue(output, *value._ptr, format);
 		}
 
 	private:

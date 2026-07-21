@@ -11,9 +11,9 @@
 namespace Silly
 {
 	template<typename T>
-	concept Formattable = requires(String& str, const T& value, const StringView format)
+	concept Formattable = requires(String& output, const T& value, const StringView format)
 	{
-		{ AppendToString(str, value, format) } noexcept -> std::same_as<Result<void, Error>>;
+		{ AppendToString(output, value, format) } noexcept -> std::same_as<Result<void, Error>>;
 	};
 
 	class String;
@@ -30,40 +30,40 @@ namespace Silly
 
 	public:
 		template<typename... Args>
-		[[nodiscard]] static Result<void, Error> FormatString(String& str, StringView format, Args&&... args);
+		[[nodiscard]] static Result<void, Error> FormatString(String& output, StringView format, Args&&... args);
 
 		template<typename T, typename... Args>
-		[[nodiscard]] static Result<void, Error> FormatStringImpl(String& str, StringView format, T&& arg, Args&&... args);
+		[[nodiscard]] static Result<void, Error> FormatStringImpl(String& output, StringView format, T&& arg, Args&&... args);
 
-		[[nodiscard]] static Result<void, Error> FormatStringImpl(String& str, StringView format);
+		[[nodiscard]] static Result<void, Error> FormatStringImpl(String& output, StringView format);
 
 		template<Formattable T>
-		[[nodiscard]] static Result<void, Error> FormatValue(String& str, const T& value, const StringView format)
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, const T& value, const StringView format)
 		{
 			/*
 			 * Depends on the following hidden friend being defined in T:
-			 * friend Result<void, Error> AppendToString(String& str, const T& value, StringView format)
+			 * friend Result<void, Error> AppendToString(String& output, const T& value, StringView format)
 			 */
-			return AppendToString(str, value, format);
+			return AppendToString(output, value, format);
 		}
 
 		template<std::integral T>
-		[[nodiscard]] static Result<void, Error> FormatValue(String& str, T value, StringView format);
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, T value, StringView format);
 
-		[[nodiscard]] static Result<void, Error> FormatValue(String& str, void* value, StringView format);
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, void* value, StringView format);
 
-		[[nodiscard]] static Result<void, Error> FormatValue(String& str, const bool value, const StringView)
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, const bool value, const StringView)
 		{
-			return FormatValue(str, value ? "true" : "false", { });
+			return FormatValue(output, value ? "true" : "false", { });
 		}
 
 		template<std::convertible_to<StringView> T>
-		[[nodiscard]] static Result<void, Error> FormatValue(String& str, const T& value, StringView format) requires(!Formattable<T>);
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, const T& value, StringView format) requires(!Formattable<T>);
 
 	private:
-		static Result<void, Error> FormatValueImplStringView(String& str, StringView view, bool justifyLeft, size_t minWidth);
-		[[nodiscard]] static Result<void, Error> FormatSignedIntegerImpl(String& str, intmax_t value, uintmax_t zeroExtended, const IntegerFormat& fmt);
-		[[nodiscard]] static Result<void, Error> FormatUnsignedIntegerImpl(String& str, uintmax_t value, const IntegerFormat& format);
+		static Result<void, Error> FormatValueImplStringView(String& output, StringView view, bool justifyLeft, size_t minWidth);
+		[[nodiscard]] static Result<void, Error> FormatSignedIntegerImpl(String& output, intmax_t value, uintmax_t zeroExtended, const IntegerFormat& fmt);
+		[[nodiscard]] static Result<void, Error> FormatUnsignedIntegerImpl(String& output, uintmax_t value, const IntegerFormat& format);
 
 		static constexpr void ParseIntegerFormat(StringView formatString, IntegerFormat& format)
 		{

@@ -17,15 +17,14 @@ namespace Silly
 			T Value;
 #
 			template<typename... Args>
-			Node(Args&&... args) : Value(std::forward<Args>(args)...) {}
+			explicit Node(Args&&... args) : Value(std::forward<Args>(args)...) {}
 		};
 
-		template<bool isConst> struct Iterator
+		template<bool isConst> class Iterator
 		{
-			template<bool> friend struct Iterator;
+			template<bool> friend class Iterator;
 			friend class LinkedList;
 
-		private:
 			using NodeBaseType = std::conditional_t<isConst, const NodeBase, NodeBase>;
 			using NodeType = std::conditional_t<isConst, const Node, Node>;
 
@@ -237,6 +236,18 @@ namespace Silly
 		}
 
 		template<typename... Args>
+		[[nodiscard]] Result<iterator, Error> Prepend(Args&&... args)
+		{
+			return InsertBefore(begin(), std::forward<Args>(args)...);
+		}
+
+		template<typename... Args>
+		[[nodiscard]] Result<iterator, Error> Append(Args&&... args)
+		{
+			return InsertBefore(end(), std::forward<Args>(args)...);
+		}
+
+		template<typename... Args>
 		[[nodiscard]] Result<iterator, Error> InsertBefore(iterator before, Args&&... args)
 		{
 			const auto node = TRY(CreateNode(std::forward<Args>(args)...));
@@ -245,23 +256,11 @@ namespace Silly
 		}
 
 		template<typename... Args>
-		[[nodiscard]] Result<iterator, Error> InsertAfter(iterator before, Args&&... args)
+		[[nodiscard]] Result<iterator, Error> InsertAfter(iterator after, Args&&... args)
 		{
 			const auto node = TRY(CreateNode(std::forward<Args>(args)...));
-			InsertAfterImpl(node, before._node);
+			InsertAfterImpl(node, after._node);
 			return Ok(iterator(node));
-		}
-
-		template<typename... Args>
-		[[nodiscard]] Result<iterator, Error> InsertFirst(Args&&... args)
-		{
-			return InsertBefore(begin(), std::forward<Args>(args)...);
-		}
-
-		template<typename... Args>
-		[[nodiscard]] Result<iterator, Error> InsertLast(Args&&... args)
-		{
-			return InsertBefore(end(), std::forward<Args>(args)...);
 		}
 
 		[[nodiscard]] Result<iterator, Error> Remove(iterator it)
