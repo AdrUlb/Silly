@@ -9,8 +9,33 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS Source/*.c Source/*.h Source/*.cpp Source/*.hpp Source/*.tpp Include/*.h Include/*.hpp)
+function(silly_library_define target_name)
+	cmake_parse_arguments(ARG "SHARED STATIC" "" "" ${ARGN})
 
-add_library(Silly STATIC ${SOURCES})
-target_include_directories(Silly PRIVATE Source PUBLIC Include)
-target_compile_options(Silly PRIVATE -Wall -Wextra -nostdlib -ffreestanding)
+	set(SILLY_ROOT ${CMAKE_CURRENT_FUNCTION_LIST_DIR})
+
+	set(LIB_TYPE "")
+	if (ARG_SHARED)
+		set(LIB_TYPE SHARED)
+	elseif (ARG_STATIC)
+		set(LIB_TYPE STATIC)
+	endif ()
+
+	file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+			${SILLY_ROOT}/Source/*.c
+			${SILLY_ROOT}/Source/*.h
+			${SILLY_ROOT}/Source/*.cpp
+			${SILLY_ROOT}/Source/*.hpp
+			${SILLY_ROOT}/Source/*.tpp
+			${SILLY_ROOT}/Include/*.h
+			${SILLY_ROOT}/Include/*.hpp
+	)
+
+	add_library(${target_name} ${LIB_TYPE} ${SOURCES})
+	target_include_directories(${target_name}
+			PRIVATE ${SILLY_ROOT}/Source
+			PUBLIC ${SILLY_ROOT}/Include
+	)
+
+	target_compile_options(${target_name} PRIVATE -Wall -Wextra)
+endfunction()
