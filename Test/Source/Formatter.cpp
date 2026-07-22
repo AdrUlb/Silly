@@ -9,7 +9,7 @@ namespace Silly
 		return output.Append(format);
 	}
 
-	[[nodiscard]] Result<void, Error> Formatter::FormatValue(String& output, void* value, const StringView format)
+	[[nodiscard]] Result<void, Error> Formatter::FormatValue(String& output, const void* value, const StringView format)
 	{
 		const auto len = output.GetLength();
 

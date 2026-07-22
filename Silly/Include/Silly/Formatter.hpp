@@ -5,8 +5,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <Silly/Result.hpp>
-#include <Silly/StringView.hpp>
+#include "Result.hpp"
+#include "StringView.hpp"
 
 namespace Silly
 {
@@ -50,15 +50,23 @@ namespace Silly
 		template<std::integral T>
 		[[nodiscard]] static Result<void, Error> FormatValue(String& output, T value, StringView format);
 
-		[[nodiscard]] static Result<void, Error> FormatValue(String& output, void* value, StringView format);
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, const void* value, StringView format);
 
-		[[nodiscard]] static Result<void, Error> FormatValue(String& output, const bool value, const StringView)
+		template<std::same_as<bool> T>
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, const T value, const StringView)
 		{
 			return FormatValue(output, value ? "true" : "false", { });
 		}
 
 		template<std::convertible_to<StringView> T>
 		[[nodiscard]] static Result<void, Error> FormatValue(String& output, const T& value, StringView format) requires(!Formattable<T>);
+
+		template<typename T>
+			requires(!Formattable<std::remove_cv_t<T>> && !std::convertible_to<std::remove_cv_t<T>*, StringView> && !std::is_same_v<std::remove_cv_t<T>, void>)
+		[[nodiscard]] static Result<void, Error> FormatValue(String& output, T* value, const StringView format)
+		{
+			return FormatValue(output, reinterpret_cast<const void*>(value), format);
+		}
 
 	private:
 		static Result<void, Error> FormatValueImplStringView(String& output, StringView view, bool justifyLeft, size_t minWidth);
