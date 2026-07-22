@@ -25,7 +25,7 @@ namespace Silly::Hashing
 		{
 			typename T::HashType;
 
-			{ algo.GetHashSize() } noexcept -> std::same_as<size_t>;
+			{ T::GetHashSize() } noexcept -> std::same_as<size_t>;
 			{ algo.Reset() } noexcept -> std::same_as<void>;
 			{ algo.ProcessBytes(bytes) } noexcept -> std::same_as<void>;
 			{ algo.Finalize(hash) } noexcept -> std::same_as<void>;

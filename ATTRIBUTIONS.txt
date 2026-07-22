@@ -1,4 +1,10 @@
-xxHash Library
+This software includes components licensed under various open-source licenses.
+
+--- xxHash Library ---
+Source: https://github.com/cyan4973/xxhash
+License: BSD 2-Clause License
+Usage: reference implementation
+
 Copyright (c) 2012-2021 Yann Collet
 All rights reserved.
 

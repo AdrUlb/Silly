@@ -24,7 +24,7 @@ namespace Silly::Hashing
 			Reset();
 		}
 
-		size_t GetHashSize() noexcept
+		[[nodiscard]] static size_t GetHashSize() noexcept
 		{
 			return 8;
 		}
@@ -54,7 +54,7 @@ namespace Silly::Hashing
 
 	private:
 		uint64_t _seed;
-		uint64_t _hash { };
+		uint64_t _hash { 0 };
 	};
 
 	static_assert(IntHashAlgorithm<Fnv1a64HashAlgorithm>);

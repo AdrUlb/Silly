@@ -13,7 +13,7 @@ namespace Silly::Hashing
 	 * The XXH64 algorithm was adapted from xxHash Library source code
 	 * Reference implementation is Copyright (c) 2012-2021 Yann Collet
 	 * This implementation is Copyright (C) 2026 Adrian Ulbrich
-	 * See ThirdPartyLicenses.txt for the full license text
+	 * See ATTRIBUTIONS.TXT for the full license text
 	 */
 	class XXH64HashAlgorithm final : public HashAlgorithmBase
 	{
@@ -37,7 +37,7 @@ namespace Silly::Hashing
 			Reset();
 		}
 
-		[[nodiscard]] size_t GetHashSize() noexcept
+		[[nodiscard]] static size_t GetHashSize() noexcept
 		{
 			return 8;
 		}
