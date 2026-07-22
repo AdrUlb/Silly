@@ -1,10 +1,9 @@
 // This file acts as a kind of "polyfill" for freestanding implementations where cstring is not available
 #pragma once
 #include <cstddef>
+#include "Silly/Macros.hpp"
 
-#if !defined(__STDC_HOSTED__) || __STDC_HOSTED__
-#include_next "cstring"
-#else
+#if SILLY_HOSTED
 extern "C"
 {
 size_t strlen(const char* str) noexcept;
@@ -21,4 +20,6 @@ extern "C++" void* memchr(void* str, int c, size_t count) noexcept asm("memchr")
 extern "C++" const void* memrchr(const void* str, int c, size_t count) noexcept asm("memrchr");;
 extern "C++" void* memrchr(void* str, int c, size_t count) noexcept asm("memrchr");
 }
+#else
+#include_next "cstring"
 #endif

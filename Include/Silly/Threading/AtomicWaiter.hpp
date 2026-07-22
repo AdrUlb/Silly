@@ -1,5 +1,6 @@
 #pragma once
 #include <atomic>
+#include "Silly/Macros.hpp"
 
 namespace Silly::Threading
 {
@@ -14,7 +15,7 @@ namespace Silly::Threading
 		static void NotifyAll(std::atomic_flag&) noexcept {}
 	};
 
-#if defined(__STDC_HOSTED__) && __STDC_HOSTED__
+#if SILLY_HOSTED
 	struct StdAtomicWaiter
 	{
 		template<typename T> static void Wait(const std::atomic<T>& state, const T value, std::memory_order memoryOrder = std::memory_order_seq_cst) noexcept
@@ -49,7 +50,7 @@ namespace Silly::Threading
 	};
 #endif
 
-#if defined(__STDC_HOSTED__) && __STDC_HOSTED__
+#if SILLY_HOSTED
 	using AtomicWaiter = StdAtomicWaiter;
 #else
 	using AtomicWaiter = DummyAtomicWaiter;

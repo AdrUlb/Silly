@@ -1,5 +1,7 @@
 #pragma once
 
+#define SILLY_HOSTED !__STDC_HOSTED__ || __STDC_HOSTED__
+
 #define FORCE_INLINE __attribute__((always_inline)) inline
 #define NEVER_INLINE __attribute__((noinline))
 #define RARELY_USED __attribute__((cold))

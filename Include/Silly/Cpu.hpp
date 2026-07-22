@@ -33,7 +33,7 @@ namespace Silly::Cpu
 #endif
 	}
 
-#if defined(KERNEL)
+#if defined(SILLY_KERNEL)
 	FORCE_INLINE constexpr bool GetInterruptsEnabled() { return true; }
 	FORCE_INLINE void EnableInterrupts() {}
 	FORCE_INLINE void DisableInterrupts() {}
