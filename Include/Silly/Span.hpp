@@ -92,7 +92,7 @@ namespace Silly
 
 			if constexpr (std::is_same_v<std::remove_cv_t<T>, std::remove_cv_t<U>>)
 			{
-				if (std::less<const void*> { }(d, s + l) && std::less<const void*> { }(s, d + l))
+				if (reinterpret_cast<uintptr_t>(d) < reinterpret_cast<uintptr_t>(s) + l && reinterpret_cast<uintptr_t>(s) < reinterpret_cast<uintptr_t>(d) + l)
 				{
 					CopyTo(destination);
 					destination.Reverse();
@@ -131,7 +131,7 @@ namespace Silly
 			const auto d = destination.AsPointer();
 			const auto l = GetLength();
 
-			if (std::less_equal<const void*> { }(d, s) || std::greater_equal<const void*> { }(d, s + l))
+			if (reinterpret_cast<uintptr_t>(d) <= reinterpret_cast<uintptr_t>(s) || reinterpret_cast<uintptr_t>(d) >= reinterpret_cast<uintptr_t>(s) + l)
 			{
 				std::copy(begin(), end(), destination.begin());
 				return;

@@ -1,5 +1,5 @@
+#include <cstdint>
 #include <cstring>
-#include <functional>
 
 #include <Silly/Macros.hpp>
 
@@ -51,7 +51,7 @@ USED WEAK void* memmove(void* dest, const void* src, const size_t count) noexcep
 	auto d = static_cast<unsigned char*>(dest);
 	auto s = static_cast<const unsigned char*>(src);
 
-	if (std::less_equal<const void*> { }(d, s) || std::greater_equal<const void*> { }(d, s + count))
+	if (reinterpret_cast<uintptr_t>(d) <= reinterpret_cast<uintptr_t>(s) || reinterpret_cast<uintptr_t>(d) >= reinterpret_cast<uintptr_t>(s) + count)
 		return memcpy(dest, src, count);
 
 	d += count - 1;
