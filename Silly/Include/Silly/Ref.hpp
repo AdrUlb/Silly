@@ -96,7 +96,8 @@ namespace Silly
 		{
 		public:
 			template<typename... Args>
-			OwnedControlBlock(Memory::Allocator& allocator, Args&&... args) : _allocator(&allocator), _storage(std::in_place_index<1>, std::forward<Args>(args)...) {}
+			OwnedControlBlock(Memory::Allocator& allocator, Args&&... args) : _allocator(&allocator),
+			                                                                  _storage(std::in_place_index<1>, std::forward<Args>(args)...) {}
 
 			T* GetPointer() noexcept
 			{
@@ -267,6 +268,14 @@ namespace Silly
 			}
 #endif
 			return Ok(Ref { cb, cb->GetPointer() });
+		}
+
+		[[nodiscard]] friend Result<void, Error> AppendToString(String& output, const Ref& value, const StringView format) noexcept
+		{
+			if (!value._ptr)
+				return Formatter::FormatValue(output, "null", format);
+
+			return Formatter::FormatValue(output, *value._ptr, format);
 		}
 
 	private:
