@@ -11,4 +11,3 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(Silly)
 
 add_subdirectory(Silly)
-add_subdirectory(Test)
