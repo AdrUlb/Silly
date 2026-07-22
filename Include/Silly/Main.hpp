@@ -5,7 +5,7 @@
 
 #define SILLY_MAIN(func)	\
 	int Main(const Silly::StringView& command, const Silly::Span<const Silly::StringView>& args); \
-	extern "C" int main(int argc, char* argv[]) \
+	int main(int argc, char* argv[]) \
 	{ \
 		using namespace Silly; \
 		VERIFY(argc > 0); /* The first argument must be the command used to start the program */ \
