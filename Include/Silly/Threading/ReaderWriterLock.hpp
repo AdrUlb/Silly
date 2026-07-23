@@ -155,7 +155,10 @@ namespace Silly::Threading
 				}
 
 				if (_state.compare_exchange_weak(value, value | WRITER_WAITING, std::memory_order_relaxed))
+				{
+					value |= WRITER_WAITING;
 					break;
+				}
 			}
 
 			while (true)
