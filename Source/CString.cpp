@@ -3,6 +3,8 @@
 
 #include <Silly/Macros.hpp>
 
+extern "C"
+{
 USED WEAK size_t strlen(const char* str) noexcept
 {
 	auto end = str;
@@ -10,13 +12,15 @@ USED WEAK size_t strlen(const char* str) noexcept
 	while (*end)
 		end++;
 
+	asm volatile("" : : : "memory");
+
 	return end - str;
 }
 
-USED WEAK int strcmp(const void* str1, const void* str2) noexcept
+USED WEAK int strcmp(const char* str1, const char* str2) noexcept
 {
-	const auto ptr1 = static_cast<const unsigned char*>(str1);
-	const auto ptr2 = static_cast<const unsigned char*>(str2);
+	const auto ptr1 = reinterpret_cast<const unsigned char*>(str1);
+	const auto ptr2 = reinterpret_cast<const unsigned char*>(str2);
 
 	for (size_t i = 0; ptr1[i] || ptr2[i]; i++)
 	{
@@ -95,7 +99,7 @@ USED WEAK int memcmp(const void* str1, const void* str2, const size_t count) noe
 	return 0;
 }
 
-USED WEAK void* memchr(void* str, const int c, const size_t count) noexcept
+extern "C++" USED WEAK void* memchr(void* str, const int c, const size_t count) noexcept
 {
 	if (!count)
 		return nullptr;
@@ -114,7 +118,7 @@ USED WEAK void* memchr(void* str, const int c, const size_t count) noexcept
 	return nullptr;
 }
 
-USED WEAK void* memrchr(void* str, const int c, const size_t count) noexcept
+extern "C++" USED WEAK void* memrchr(void* str, const int c, const size_t count) noexcept
 {
 	if (!count)
 		return nullptr;
@@ -131,4 +135,5 @@ USED WEAK void* memrchr(void* str, const int c, const size_t count) noexcept
 	}
 
 	return nullptr;
+}
 }

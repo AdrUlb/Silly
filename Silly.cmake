@@ -21,7 +21,6 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 function(silly_library_define target_name)
 	cmake_parse_arguments(ARG "SHARED STATIC" "" "" ${ARGN})
 
-	message(WARNING ${SOURCES})
 	set(LIB_TYPE "")
 	if (ARG_SHARED)
 		set(LIB_TYPE SHARED)
@@ -30,6 +29,7 @@ function(silly_library_define target_name)
 	endif ()
 
 	add_library(${target_name} ${LIB_TYPE} ${SOURCES})
+	set_source_files_properties(${SILLY_ROOT}/Source/CString.cpp PROPERTIES COMPILE_FLAGS "-O0 -fno-lto -fno-builtin -fno-tree-loop-distribute-patterns")
 	target_include_directories(${target_name}
 			PRIVATE ${SILLY_ROOT}/Source
 			PUBLIC ${SILLY_ROOT}/Include

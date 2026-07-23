@@ -3,7 +3,10 @@
 #include <cstddef>
 #include "Silly/Macros.hpp"
 
-#if !SILLY_HOSTED
+#if SILLY_HOSTED
+#include_next "cstring"
+#endif
+
 extern "C"
 {
 size_t strlen(const char* str) noexcept;
@@ -20,6 +23,3 @@ extern "C++" void* memchr(void* str, int c, size_t count) noexcept asm("memchr")
 extern "C++" const void* memrchr(const void* str, int c, size_t count) noexcept asm("memrchr");;
 extern "C++" void* memrchr(void* str, int c, size_t count) noexcept asm("memrchr");
 }
-#else
-#include_next "cstring"
-#endif

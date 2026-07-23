@@ -42,7 +42,6 @@
 #include "Silly/Threading/Lockable.hpp"
 #include "Silly/Threading/Mutex.hpp"
 #include "Silly/Threading/ReaderWriterLock.hpp"
-#include "Silly/Threading/SpinLock.hpp"
 
 namespace Silly
 {

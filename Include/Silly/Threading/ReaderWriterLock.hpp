@@ -6,7 +6,7 @@
 
 namespace Silly::Threading
 {
-	template<bool sleeping = true>
+	template<typename Waiter>
 	class ReaderWriterLock
 	{
 		static constexpr uint32_t WRITER_WAITING = 1U << 31;
@@ -109,10 +109,7 @@ namespace Silly::Threading
 			{
 				if (value & (WRITER_LOCKED | WRITER_WAITING))
 				{
-					if constexpr (sleeping)
-						AtomicWaiter::Wait(_state, value);
-					else
-						Cpu::Pause();
+					Waiter::Wait(_state, value);
 
 					value = _state.load(std::memory_order_relaxed);
 					continue;
@@ -126,14 +123,11 @@ namespace Silly::Threading
 		void ReleaseRead() noexcept
 		{
 			const auto old = _state.fetch_sub(1, std::memory_order_release);
-			if constexpr (sleeping)
-			{
-				const auto readerCount = old & READER_COUNT_MASK;
+			const auto readerCount = old & READER_COUNT_MASK;
 
-				// We were the last reader and there is a writer waiting for a notification, notify it!
-				if (readerCount == 1 && (old & WRITER_WAITING))
-					AtomicWaiter::NotifyAll(_state);
-			}
+			// We were the last reader and there is a writer waiting for a notification, notify it!
+			if (readerCount == 1 && (old & WRITER_WAITING))
+				Waiter::NotifyAll(_state);
 		}
 
 		bool TryAcquireWrite() noexcept
@@ -154,10 +148,7 @@ namespace Silly::Threading
 			{
 				if (value & WRITER_WAITING)
 				{
-					if constexpr (sleeping)
-						AtomicWaiter::Wait(_state, value);
-					else
-						Cpu::Pause();
+					Waiter::Wait(_state, value);
 
 					value = _state.load(std::memory_order_relaxed);
 					continue;
@@ -173,10 +164,7 @@ namespace Silly::Threading
 
 				if (readerCount > 0 || value & WRITER_LOCKED) // If the lock is currently held by ANYONE AT ALL
 				{
-					if constexpr (sleeping)
-						AtomicWaiter::Wait(_state, value);
-					else
-						Cpu::Pause();
+					Waiter::Wait(_state, value);
 
 					value = _state.load(std::memory_order_relaxed);
 					continue;
@@ -190,8 +178,7 @@ namespace Silly::Threading
 		void ReleaseWrite() noexcept
 		{
 			const auto old = _state.fetch_and(~WRITER_LOCKED, std::memory_order_release);
-			if constexpr (sleeping)
-				AtomicWaiter::NotifyAll(_state);
+			Waiter::NotifyAll(_state);
 		}
 
 		std::atomic<uint32_t> _state { 0 };
@@ -199,6 +186,4 @@ namespace Silly::Threading
 		static_assert(Lockable<Reader>);
 		static_assert(Lockable<Writer>);
 	};
-
-	using ReaderWriterSpinLock = ReaderWriterLock<false>;
 }

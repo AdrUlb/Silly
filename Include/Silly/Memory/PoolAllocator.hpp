@@ -26,6 +26,8 @@ namespace Silly::Memory
 
 		void DeallocateBytes(void* ptr, const size_t size, const size_t alignment) noexcept override
 		{
+			IGNORE(size);
+			IGNORE(alignment);
 			return _pool.Deallocate(ptr);
 		}
 

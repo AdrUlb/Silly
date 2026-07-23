@@ -5,6 +5,7 @@
 
 namespace Silly::Threading
 {
+	template<typename Waiter>
 	class Mutex : public LockableBase
 	{
 	public:
@@ -19,18 +20,19 @@ namespace Silly::Threading
 			VERIFY(Cpu::GetInterruptsEnabled());
 
 			while (!TryAcquire())
-				AtomicWaiter::Wait(_flag, true, std::memory_order_relaxed);
+				Waiter::Wait(_flag, true, std::memory_order_relaxed);
 		}
 
 		void Release() noexcept
 		{
 			_flag.clear(std::memory_order_release);
-			AtomicWaiter::NotifyOne(_flag);
+			Waiter::NotifyOne(_flag);
 		}
 
 	private:
 		std::atomic_flag _flag { false };
 	};
 
-	static_assert(Lockable<Mutex>);
+	using SpinLock = Mutex<SpinWaiter>;
+	static_assert(Lockable<SpinLock>);
 }

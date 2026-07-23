@@ -11,6 +11,7 @@ namespace Silly::Threading
 	enum IrqUnsafeTag { IrqUnsafe };
 
 	struct LockableBase;
+	struct LockableArchetype;
 
 	template<typename T>
 	concept Lockable = requires(T lock)
@@ -20,19 +21,21 @@ namespace Silly::Threading
 		{ lock.Release() } -> std::same_as<void>;
 	} && std::is_base_of_v<LockableBase, T>;
 
-	template<bool IsIrqSafe, Lockable Lock>
+	template<template <typename...> typename T>
+	concept LockableGuard = requires(LockableArchetype& lock)
+	{
+		{ T<LockableArchetype>::TryTake(lock) } -> std::same_as<Option<T<LockableArchetype>>>;
+		{ T<LockableArchetype>::Take(lock) } -> std::same_as<T<LockableArchetype>>;
+	};
+
+	template<Lockable Lock>
 	class LockGuard
 	{
 		friend LockableBase;
 
 	private:
 		explicit LockGuard(Lock& lock) noexcept
-			requires(!IsIrqSafe)
 			: _lock(&lock) {}
-
-		explicit LockGuard(Lock& lock, Cpu::IrqGuard&& irqGuard) noexcept
-			requires(IsIrqSafe)
-			: _lock(&lock), _irqGuard(std::move(irqGuard)) {}
 
 	public:
 		~LockGuard()
@@ -45,7 +48,7 @@ namespace Silly::Threading
 		LockGuard& operator=(const LockGuard&) = delete;
 
 		LockGuard(LockGuard&& other) noexcept
-			: _lock(std::exchange(other._lock, nullptr)), _irqGuard(std::move(other._irqGuard)) {}
+			: _lock(std::exchange(other._lock, nullptr)) {}
 
 		LockGuard& operator=(LockGuard&& other) noexcept
 		{
@@ -55,53 +58,80 @@ namespace Silly::Threading
 			if (_lock)
 				_lock->Release();
 
-			if constexpr (IsIrqSafe)
-				_irqGuard = std::move(other._irqGuard);
-
 			_lock = std::exchange(other._lock, nullptr);
 			return *this;
 		}
 
+		[[nodiscard]] static LockGuard Take(Lock& lock)
+		{
+			lock.Acquire();
+			return LockGuard(lock);
+		}
+
+		[[nodiscard]] static Option<LockGuard> TryTake(Lock& lock)
+		{
+			if (lock.TryAcquire())
+				return Some(LockGuard(lock));
+
+			return None;
+		}
+
 	private:
 		Lock* _lock;
-		[[no_unique_address]] std::conditional_t<IsIrqSafe, Cpu::IrqGuard, Empty> _irqGuard;
+	};
+
+	template<Lockable Lock>
+	class IrqLockGuard
+	{
+		friend LockableBase;
+
+	private:
+		explicit IrqLockGuard(LockGuard<Lock>&& lockGuard, Cpu::IrqGuard&& irqGuard) noexcept
+			: _irqGuard(std::move(irqGuard)), _lock(std::move(lockGuard)) {}
+
+	public:
+		[[nodiscard]] static IrqLockGuard Take(Lock& lock)
+		{
+			return IrqLockGuard(LockGuard<Lock>::Take(lock), Cpu::IrqGuard::Disable());
+		}
+
+		[[nodiscard]] static Option<IrqLockGuard> TryTake(Lock& lock)
+		{
+			auto guard = LockGuard<Lock>::TryTake(lock);
+			if (!guard)
+				return None;
+
+			return Some(IrqLockGuard(std::move(guard).Unwrap(), Cpu::IrqGuard::Disable()));
+		}
+
+	private:
+		// NOTE: the order here is important: the lock and guard are released in *reverse order of declaration here*
+		Cpu::IrqGuard _irqGuard;
+		LockGuard<Lock> _lock;
 	};
 
 	struct LockableBase
 	{
-		template<Lockable Self>
-		[[nodiscard]] auto Hold(this Self& self, IrqSafeTag)
+		template<template <typename...> typename Guard, typename Self> requires (LockableGuard<Guard>)
+		[[nodiscard]] auto Take(this Self&& self)
 		{
-			auto irqGuard = Cpu::IrqGuard::Disable();
-			self.Acquire();
-			return LockGuard<true, Self>(self, std::move(irqGuard));
+			return Guard<std::remove_cvref_t<Self>>::Take(self);
 		}
 
-		template<Lockable Self>
-		[[nodiscard]] auto Hold(this Self& self, IrqUnsafeTag = IrqUnsafe)
+		template<template <typename...> typename Guard, typename Self> requires (LockableGuard<Guard>)
+		[[nodiscard]] auto TryTake(this Self&& self)
 		{
-			self.Acquire();
-			return LockGuard<false, Self>(self);
-		}
-
-		template<Lockable Self>
-		[[nodiscard]] Result<LockGuard<true, Self>, Error> TryHold(this Self& self, IrqSafeTag)
-		{
-			auto irqGuard = Cpu::IrqGuard::Disable();
-
-			if (self.TryAcquire())
-				return Ok(LockGuard<true, Self>(self, std::move(irqGuard)));
-
-			return Err(Error("Failed to acquire the lock."));
-		}
-
-		template<Lockable Self>
-		[[nodiscard]] Result<LockGuard<false, Self>, Error> TryHold(this Self& self, IrqUnsafeTag = IrqUnsafe)
-		{
-			if (self.TryAcquire())
-				return Ok(LockGuard<false, Self>(self));
-
-			return Err(Error("Failed to acquire the lock."));
+			return Guard<std::remove_cvref_t<Self>>::TryTake(self);
 		}
 	};
+
+	// The Lockable archetype, at minimum every Lockable must implement this interface
+	struct LockableArchetype : LockableBase
+	{
+		[[nodiscard]] bool TryAcquire();
+		void Acquire();
+		void Release();
+	};
+
+	static_assert(LockableGuard<LockGuard>);
 }
