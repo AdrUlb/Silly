@@ -30,3 +30,7 @@ namespace Silly::Memory
 		}
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

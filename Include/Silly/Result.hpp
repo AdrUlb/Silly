@@ -269,3 +269,7 @@ namespace Silly
 			[[unlikely]] return Err(result.UnwrapErr()); \
 		std::forward<decltype(result)>(result).UnwrapOk(); \
 	})
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

@@ -109,3 +109,7 @@ namespace Silly
 
 	static_assert(std::contiguous_iterator<PointerIterator<int>>);
 } // namespace Silly
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

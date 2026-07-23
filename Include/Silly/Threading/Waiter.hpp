@@ -1,7 +1,6 @@
 #pragma once
 #include <atomic>
 
-#include "Silly/Cpu.hpp"
 #include "Silly/Macros.hpp"
 
 namespace Silly::Threading
@@ -20,23 +19,6 @@ namespace Silly::Threading
 		{ T::NotifyOne(flag) } -> std::same_as<void>;
 		{ T::NotifyAll(flag) } -> std::same_as<void>;
 	};
-
-	// The dummy waiter does not actually wait
-	struct SpinWaiter
-	{
-		template<typename T> static void Wait(const std::atomic<T>&, const T, std::memory_order = std::memory_order_seq_cst) noexcept
-		{
-			Cpu::Pause();
-		}
-
-		template<typename T> static void NotifyOne(std::atomic<T>&) noexcept {}
-		template<typename T> static void NotifyAll(std::atomic<T>&) noexcept {}
-		static void Wait(const std::atomic_flag&, const bool, std::memory_order = std::memory_order_seq_cst) noexcept {}
-		static void NotifyOne(std::atomic_flag&) noexcept {}
-		static void NotifyAll(std::atomic_flag&) noexcept {}
-	};
-
-	static_assert(Waiter<SpinWaiter>);
 
 #if SILLY_HOSTED
 	struct StdAtomicWaiter
@@ -75,3 +57,7 @@ namespace Silly::Threading
 	static_assert(Waiter<StdAtomicWaiter>);
 #endif
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

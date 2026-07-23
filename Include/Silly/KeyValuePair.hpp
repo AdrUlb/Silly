@@ -49,3 +49,7 @@ struct std::tuple_element<1, Silly::KeyValuePair<TKey, TValue>>
 {
 	using type = TValue;
 };
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

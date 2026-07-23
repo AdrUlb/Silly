@@ -268,3 +268,7 @@ namespace Silly
 		std::variant<Empty, StorageT> _storage;
 	};
 } // namespace Silly
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

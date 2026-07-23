@@ -1,11 +1,10 @@
 #pragma once
-#include "AtomicWaiter.hpp"
 #include "Lockable.hpp"
-#include "Silly/Cpu.hpp"
+#include "Waiter.hpp"
 
 namespace Silly::Threading
 {
-	template<typename Waiter>
+	template<Waiter Waiter>
 	class Mutex : public LockableBase
 	{
 	public:
@@ -16,9 +15,6 @@ namespace Silly::Threading
 
 		void Acquire() noexcept
 		{
-			// Interrupts CANNOT be disabled, use a spin-lock instead.
-			VERIFY(Cpu::GetInterruptsEnabled());
-
 			while (!TryAcquire())
 				Waiter::Wait(_flag, true, std::memory_order_relaxed);
 		}
@@ -32,7 +28,8 @@ namespace Silly::Threading
 	private:
 		std::atomic_flag _flag { false };
 	};
-
-	using SpinLock = Mutex<SpinWaiter>;
-	static_assert(Lockable<SpinLock>);
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

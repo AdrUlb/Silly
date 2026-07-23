@@ -25,3 +25,7 @@ namespace Silly
 		const std::source_location _location;
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

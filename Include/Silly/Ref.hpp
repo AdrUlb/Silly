@@ -406,3 +406,7 @@ namespace Silly
 		T* _ptr;
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

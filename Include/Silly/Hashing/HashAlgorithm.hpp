@@ -120,3 +120,7 @@ namespace Silly::Hashing
 
 // Finally, include span down here so the implementation is found when the template method bodies are evaluated
 #include "Silly/Span.hpp"
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

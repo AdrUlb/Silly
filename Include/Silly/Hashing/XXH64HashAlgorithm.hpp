@@ -223,3 +223,7 @@ namespace Silly::Hashing
 
 	static_assert(IntHashAlgorithm<XXH64HashAlgorithm>);
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

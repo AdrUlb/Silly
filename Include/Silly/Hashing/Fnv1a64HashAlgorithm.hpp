@@ -59,3 +59,7 @@ namespace Silly::Hashing
 
 	static_assert(IntHashAlgorithm<Fnv1a64HashAlgorithm>);
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

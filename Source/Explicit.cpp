@@ -5,7 +5,6 @@
 #include <cstring>
 #include "Silly/Box.hpp"
 #include "Silly/Buffer.hpp"
-#include "Silly/Cpu.hpp"
 #include "Silly/Empty.hpp"
 #include "Silly/Error.hpp"
 #include "Silly/Extern.hpp"
@@ -37,7 +36,7 @@
 #include "Silly/Memory/MemoryPool.hpp"
 #include "Silly/Memory/PoolAllocator.hpp"
 
-#include "Silly/Threading/AtomicWaiter.hpp"
+#include "Silly/Threading/Waiter.hpp"
 #include "Silly/Threading/DummyLock.hpp"
 #include "Silly/Threading/Lockable.hpp"
 #include "Silly/Threading/Mutex.hpp"

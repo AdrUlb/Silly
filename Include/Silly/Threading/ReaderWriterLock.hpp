@@ -2,7 +2,7 @@
 #include <atomic>
 
 #include "Lockable.hpp"
-#include "Silly/Threading/AtomicWaiter.hpp"
+#include "Silly/Threading/Waiter.hpp"
 
 namespace Silly::Threading
 {
@@ -187,3 +187,7 @@ namespace Silly::Threading
 		static_assert(Lockable<Writer>);
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

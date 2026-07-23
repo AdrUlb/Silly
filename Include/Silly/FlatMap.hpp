@@ -527,3 +527,7 @@ namespace Silly
 		size_t _resizeThreshold { 0 };
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

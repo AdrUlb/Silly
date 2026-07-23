@@ -241,3 +241,7 @@ namespace Silly
 }
 
 #include "String.tpp"
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

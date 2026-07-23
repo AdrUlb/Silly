@@ -74,3 +74,7 @@ namespace Silly::Memory
 		MemoryPool _pool;
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

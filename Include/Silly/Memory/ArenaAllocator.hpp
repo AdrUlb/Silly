@@ -98,3 +98,7 @@ namespace Silly::Memory
 		std::byte _arena[arenaSize] { };
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

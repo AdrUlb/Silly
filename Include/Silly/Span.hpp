@@ -157,3 +157,7 @@ namespace Silly
 		size_t _length;
 	};
 } // namespace Silly
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

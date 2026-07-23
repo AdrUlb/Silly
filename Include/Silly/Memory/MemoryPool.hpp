@@ -91,3 +91,7 @@ namespace Silly::Memory
 #endif
 	};
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

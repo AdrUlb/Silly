@@ -143,3 +143,7 @@ namespace Silly
 }
 
 #include "Formatter.tpp"
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

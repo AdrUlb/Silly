@@ -13,3 +13,7 @@ namespace Silly::Threading
 
 	static_assert(Lockable<DummyLock>);
 }
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif

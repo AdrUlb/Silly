@@ -60,3 +60,7 @@ namespace Silly
 		Span<T> _span;
 	};
 } // namespace Silly
+
+#if SILLY_GLOBAL
+using namespace Silly;
+#endif
