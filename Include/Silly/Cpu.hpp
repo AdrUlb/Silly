@@ -14,7 +14,7 @@ namespace Silly::Cpu
 #elif defined(__aarch64__)
 		asm volatile("yield" ::: "memory");
 #else
-#warning No architecture-specific CPU pause instruction has been specified.
+#error Your platform is not supported.
 #endif
 	}
 
@@ -29,21 +29,22 @@ namespace Silly::Cpu
 		);
 		return flags;
 #else
-#error No architecture-specific instruction for getting CPU flags has been specified.
+#error Your platform is not supported.
 #endif
 	}
 
-#if defined(SILLY_KERNEL)
+#if SILLY_HOSTED
 	FORCE_INLINE constexpr bool GetInterruptsEnabled() { return true; }
 	FORCE_INLINE void EnableInterrupts() {}
 	FORCE_INLINE void DisableInterrupts() {}
+	FORCE_INLINE void WaitInterrupts() {}
 #else
 	FORCE_INLINE bool GetInterruptsEnabled()
 	{
 #if defined(__x86_64__) || defined(__i386__)
 		return GetFlags() & (1 << 9);
 #else
-#error No architecture-specific instruction for determining the interrupt state has been specified.
+#error Your platform is not supported.
 #endif
 	}
 
@@ -52,7 +53,7 @@ namespace Silly::Cpu
 #if defined(__x86_64__) || defined(__i386__)
 		asm volatile("sti" ::: "memory");
 #else
-#error No architecture-specific instruction for enabling interrupts has been specified.
+#error Your platform is not supported.
 #endif
 	}
 
@@ -61,7 +62,16 @@ namespace Silly::Cpu
 #if defined(__x86_64__) || defined(__i386__)
 		asm volatile("cli": : : "memory");
 #else
-#error No architecture-specific instruction for disabling interrupts has been specified.
+#error Your platform is not supported.
+#endif
+	}
+
+	FORCE_INLINE void WaitInterrupts()
+	{
+#if defined(__x86_64__) || defined(__i386__)
+		asm volatile("hlt": : : "memory");
+#else
+#error Your platform is not supported.
 #endif
 	}
 #endif

@@ -3,7 +3,7 @@
 #include <cstddef>
 #include "Silly/Macros.hpp"
 
-#if SILLY_HOSTED
+#if !SILLY_HOSTED
 extern "C"
 {
 size_t strlen(const char* str) noexcept;

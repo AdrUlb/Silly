@@ -115,7 +115,7 @@ namespace Silly
 			requires(std::is_reference_v<T>)
 		{
 			IsValueOrCatchFire();
-			return &std::get<1>(_storage).get();
+			return &std::get<1>(_storage).Get();
 		}
 
 		[[nodiscard]] constexpr FORCE_INLINE operator bool() const

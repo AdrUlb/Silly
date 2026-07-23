@@ -10,6 +10,8 @@
 #include "Silly/Error.hpp"
 #include "Silly/Extern.hpp"
 #include "Silly/FlatMap.hpp"
+#include "Silly/Formatter.hpp"
+#include "Silly/IntrusiveList.hpp"
 #include "Silly/KeyValuePair.hpp"
 #include "Silly/LinkedList.hpp"
 #include "Silly/List.hpp"
@@ -20,9 +22,27 @@
 #include "Silly/Ref.hpp"
 #include "Silly/Result.hpp"
 #include "Silly/Span.hpp"
+#include "Silly/String.hpp"
 #include "Silly/StringView.hpp"
 #include "Silly/Utf8.hpp"
 #include "Silly/WrappedRef.hpp"
+
+#include "Silly/Hashing/Fnv1a64HashAlgorithm.hpp"
+#include "Silly/Hashing/HashAlgorithm.hpp"
+#include "Silly/Hashing/XXH64HashAlgorithm.hpp"
+
+#include "Silly/Memory/Allocator.hpp"
+#include "Silly/Memory/ArenaAllocator.hpp"
+#include "Silly/Memory/HeapAllocator.hpp"
+#include "Silly/Memory/MemoryPool.hpp"
+#include "Silly/Memory/PoolAllocator.hpp"
+
+#include "Silly/Threading/AtomicWaiter.hpp"
+#include "Silly/Threading/DummyLock.hpp"
+#include "Silly/Threading/Lockable.hpp"
+#include "Silly/Threading/Mutex.hpp"
+#include "Silly/Threading/ReaderWriterLock.hpp"
+#include "Silly/Threading/SpinLock.hpp"
 
 namespace Silly
 {

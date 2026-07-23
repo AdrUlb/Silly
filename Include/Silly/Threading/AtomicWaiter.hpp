@@ -1,12 +1,18 @@
 #pragma once
 #include <atomic>
+
+#include "Silly/Cpu.hpp"
 #include "Silly/Macros.hpp"
 
 namespace Silly::Threading
 {
+	// The dummy waiter does not actually wait
 	struct DummyAtomicWaiter
 	{
-		template<typename T> static void Wait(const std::atomic<T>&, const T, std::memory_order = std::memory_order_seq_cst) noexcept {}
+		template<typename T> static void Wait(const std::atomic<T>&, const T, std::memory_order = std::memory_order_seq_cst) noexcept
+		{
+			Cpu::Pause();
+		}
 		template<typename T> static void NotifyOne(std::atomic<T>&) noexcept {}
 		template<typename T> static void NotifyAll(std::atomic<T>&) noexcept {}
 

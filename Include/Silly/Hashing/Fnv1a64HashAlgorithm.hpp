@@ -2,7 +2,7 @@
 #include <cstdint>
 
 #include "HashAlgorithm.hpp"
-#include "../Span.hpp"
+#include "Silly/Span.hpp"
 
 namespace Silly::Hashing
 {

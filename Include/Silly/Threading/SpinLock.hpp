@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include "Lockable.hpp"
 #include "Silly/Cpu.hpp"
 
