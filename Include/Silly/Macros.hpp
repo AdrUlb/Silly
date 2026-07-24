@@ -8,7 +8,7 @@
 #define USED __attribute__((used))
 #define WEAK __attribute__((weak))
 #define NAKED __attribute__((naked))
-#define NORETURN [[noreturn]]
+#define NORETURN __attribute__((noreturn))
 
 #define CONCAT_IMPL(x, y) x##y
 #define CONCAT(x, y) CONCAT_IMPL(x, y)
